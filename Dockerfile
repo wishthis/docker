@@ -28,6 +28,3 @@ USER www-data
 
 # Expose port
 EXPOSE 80
-
-# Launch service
-CMD [ "php", "./index.php" ]
