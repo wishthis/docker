@@ -1,30 +1,45 @@
-FROM php:8.2-rc-alpine
+# Wishthis - Unofficial docker image
+FROM php:8.1-fpm
 
-# MAINTAINER
+# Maintainer
 LABEL maintainer="hiob <hello@hiob.fr>"
 LABEL author="hiob <hello@hiob.fr>"
 
-# Add dependencies
-RUN apk update
-RUN apk add --update-cache git \
-  tzdata
+# Add required packages
+RUN apt update \
+  && apt install -y curl \
+  git \
+  libicu-dev \
+  libpng-dev \
+  mysqli \
+  tzdata \
+  zlib1g-dev \
+  && apt clean -y \
+  
+# Add PHP extensions  
+RUN docker-php-ext-configure intl \
+ && docker-php-ext-install intl mysqli pdo_mysql
 
 # Working directory
-RUN mkdir /var/www/whisthis
-WORKDIR /var/www/whisthis
+WORKDIR /var/www/html
 
-# Git clone Wishthis
-RUN git --version
-RUN git clone -b stable https://github.com/grandeljay/wishthis.git .
-
-# Chown /var/www/whisthis
-RUN chown -R www-data:www-data /var/www/whisthis
-
-#Timezone default Env
-ENV TZ Europe/Paris
+# Chown /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 
 # Change user
 USER www-data
 
+# Git clone Wishthis
+RUN git --version
+RUN git clone -b stable https://github.com/grandeljay/wishthis.git .
+# Add PHPinfo (dev purpose)
+COPY ./phpinfo.php phpinfo.php
+
+#Timezone default Env
+ENV TZ Europe/Paris
+
 # Expose port
 EXPOSE 80
+
+# Launch
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
