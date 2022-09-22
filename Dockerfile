@@ -1,5 +1,5 @@
 # Wishthis - Unofficial docker image
-FROM php:8.1-fpm
+FROM php:8.1-apache
 
 # Maintainer
 LABEL maintainer="hiob <hello@hiob.fr>"
