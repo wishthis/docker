@@ -17,6 +17,7 @@ RUN apt update \
   libicu-dev \
   libjpeg62-turbo-dev \
   libpng-dev \
+  nano \
   tzdata \ 
   zlib1g-dev \
   && apt clean -y
@@ -24,10 +25,11 @@ RUN apt update \
 # Add PHP extensions  
 RUN docker-php-ext-configure intl \
  && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
- && docker-php-ext-install -j$(nproc) gd intl mysqli pdo pdo_mysql
+ && docker-php-ext-install -j$(nproc) gd gettext intl mysqli pdo pdo_mysql
  
 # Working directory
 ENV WISHTHIS_INSTALL /var/www/wishthis
+ENV WISHTHIS_CONFIG /var/www/wishthis/src/config/
 RUN mkdir $WISHTHIS_INSTALL
 RUN chown -R www-data:www-data $WISHTHIS_INSTALL
 WORKDIR $WISHTHIS_INSTALL
@@ -43,7 +45,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 RUN echo "ServerName wishthis.localhost" >> /etc/apache2/apache2.conf \
     && a2enmod rewrite \
-    && apachectl restart
+    && service apache2 restart
 
 ## Timezone
 ENV TZ Europe/Paris
@@ -53,11 +55,15 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 USER www-data
 
 # Git clone Wishthis
+ENV WISHTHIS_GITBRANCH develop
 RUN git --version
-RUN git clone -b stable https://github.com/grandeljay/wishthis.git .
+RUN git clone -b $WISHTHIS_GITBRANCH https://github.com/grandeljay/wishthis.git .
 
 # Expose port
 EXPOSE 80
+
+# Volume
+VOLUME $WISHTHIS_CONFIG
 
 # Launch
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
