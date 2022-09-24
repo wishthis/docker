@@ -5,26 +5,49 @@ FROM php:8.1-apache
 LABEL maintainer="hiob <hello@hiob.fr>"
 LABEL author="hiob <hello@hiob.fr>"
 
+LABEL version="0.1.0"
+LABEL description="PHP 8.1 / Apache 2 / Wishthis 0.6.0"
+
 # Add required packages
 RUN apt update \
-  && apt install -y curl \
-  git \
+  && apt install -y apt-utils \ 
+  curl \ 
+  git \ 
+  libfreetype6-dev \
   libicu-dev \
+  libjpeg62-turbo-dev \
   libpng-dev \
-  mysqli \
-  tzdata \
+  tzdata \ 
   zlib1g-dev \
-  && apt clean -y \
+  && apt clean -y
   
 # Add PHP extensions  
 RUN docker-php-ext-configure intl \
- && docker-php-ext-install intl mysqli pdo_mysql
-
+ && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
+ && docker-php-ext-install -j$(nproc) gd intl mysqli pdo pdo_mysql
+ 
 # Working directory
-WORKDIR /var/www/html
+ENV WISHTHIS_INSTALL /var/www/wishthis
+RUN mkdir $WISHTHIS_INSTALL
+RUN chown -R www-data:www-data $WISHTHIS_INSTALL
+WORKDIR $WISHTHIS_INSTALL
 
-# Chown /var/www/html
-RUN chown -R www-data:www-data /var/www/html
+# Enabling Apache vhost
+COPY wishthis.conf /etc/apache2/sites-available/wishthis.conf
+RUN sed -i 's/wishthis.localhost/wishthis.${HOSTNAME}/' /etc/apache2/sites-available/wishthis.conf \
+    && a2dissite * && a2ensite wishthis.conf
+    
+# Changing DOCUMENT ROOT
+ENV APACHE_DOCUMENT_ROOT $WISHTHIS_INSTALL
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+RUN echo "ServerName wishthis.localhost" >> /etc/apache2/apache2.conf \
+    && a2enmod rewrite \
+    && apachectl restart
+
+## Timezone
+ENV TZ Europe/Paris
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Change user
 USER www-data
@@ -32,11 +55,6 @@ USER www-data
 # Git clone Wishthis
 RUN git --version
 RUN git clone -b stable https://github.com/grandeljay/wishthis.git .
-# Add PHPinfo (dev purpose)
-COPY ./phpinfo.php phpinfo.php
-
-#Timezone default Env
-ENV TZ Europe/Paris
 
 # Expose port
 EXPOSE 80
