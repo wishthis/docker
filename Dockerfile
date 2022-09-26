@@ -30,8 +30,7 @@ RUN docker-php-ext-configure intl \
 # Working directory
 ENV WISHTHIS_INSTALL /var/www/html
 ENV WISHTHIS_CONFIG /var/www/html/src/config/
-RUN mkdir $WISHTHIS_INSTALL \
-    && chown -R www-data:www-data $WISHTHIS_INSTALL
+RUN chown -R www-data:www-data $WISHTHIS_INSTALL
 
 WORKDIR $WISHTHIS_INSTALL
 
