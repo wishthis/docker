@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  wishthis:
+    container_name: wishthis
+    restart: unless-stopped
+    image: hiob/wishthis:0.7.0
+    volumes:
+      - ./config.php:/var/www/html/src/config/config.php
