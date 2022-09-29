@@ -16,7 +16,10 @@ Here a sample of `docker-compose.yml` :
 ```
 version: '3.7'
 services:
-  whishthis:
-    container_name: whishthis
-    image: hiob/whishthis:latest
+  wishthis:
+    container_name: wishthis
+    restart: unless-stopped
+    image: hiob/wishthis:latest
+    volumes:
+      - ./config.php:/var/www/html/src/config/config.php
 ```
