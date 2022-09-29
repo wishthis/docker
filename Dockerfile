@@ -5,8 +5,8 @@ FROM php:8.1-apache
 LABEL maintainer "hiob <hello@hiob.fr>"
 LABEL author "hiob <hello@hiob.fr>"
 
-LABEL version "0.1.0"
-LABEL description "PHP 8.1 / Apache 2 / Wishthis 0.6.0"
+LABEL version "0.7.0"
+LABEL description "PHP 8.1 / Apache 2 / Wishthis 0.7.0"
 
 # Add required packages
 RUN a2enmod rewrite
@@ -25,31 +25,29 @@ RUN apt update \
   
 # Add PHP extensions  
 RUN docker-php-ext-configure intl \
+ && docker-php-ext-install -j$(nproc) exif gettext iconv intl mysqli pdo pdo_mysql \
  && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
- && docker-php-ext-install -j$(nproc) gd gettext intl mysqli pdo pdo_mysql
-
+ && docker-php-ext-install -j$(nproc) gd
+ 
 # Working directory
-ENV WISHTHIS_INSTALL /var/www/wishthis
-ENV WISHTHIS_CONFIG /var/www/wishthis/src/config/
-RUN mkdir $WISHTHIS_INSTALL && chown -R www-data:www-data $WISHTHIS_INSTALL
-WORKDIR $WISHTHIS_INSTALL
-
-# Changing DOCUMENT ROOT
-ENV APACHE_DOCUMENT_ROOT /var/www/whisthis
-
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+ENV WISHTHIS_INSTALL /var/www/html
+ENV WISHTHIS_CONFIG /var/www/html/src/config/
+RUN chown -R www-data:www-data $WISHTHIS_INSTALL
 
 # Enabling Apache vhost
 COPY wishthis.conf /etc/apache2/sites-available/wishthis.conf
-RUN a2dissite * && a2ensite wishthis.conf \
-    && a2enmod rewrite
-RUN echo "ServerName wishthis.hiob.fr" >> /etc/apache2/apache2.conf \
-    && service apache2 restart
+RUN a2enmod rewrite
+WORKDIR /etc/apache2/sites-available/
+RUN a2ensite wishthis.conf
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+RUN service apache2 restart
 
 ## Timezone
 ENV TZ Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Change work directory
+WORKDIR $WISHTHIS_INSTALL
  
 # Change user
 USER www-data
