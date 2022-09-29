@@ -23,3 +23,7 @@ services:
     volumes:
       - ./config.php:/var/www/html/src/config/config.php
 ```
+
+### Config.php
+
+To keep your database configuration  permanent, mount a volume (see example above), create a file named `config.php` and copy the [`config-sample.php` from Github's repo](https://github.com/grandeljay/wishthis/blob/develop/src/config/config-sample.php).
