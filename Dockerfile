@@ -6,7 +6,7 @@ LABEL maintainer "hiob <hello@hiob.fr>"
 LABEL author "hiob <hello@hiob.fr>"
 
 LABEL version "0.7.0"
-LABEL description "PHP 8.1 / Apache 2 / Wishthis 0.7.0"
+LABEL description "PHP 8.1 / Apache 2 / Wishthis (release-candidate)"
 
 # Add required packages
 RUN a2enmod rewrite
@@ -53,9 +53,9 @@ WORKDIR $WISHTHIS_INSTALL
 USER www-data
 
 # Git clone grandeljay/wishthis (default stable branch)
-ARG WISHTHIS_GITBRANCH develop
+ARG WISHTHIS_GITBRANCH=stable
 ENV WISHTHIS_GITBRANCH $WISHTHIS_GITBRANCH
-RUN git --version && echo ...Cloning $WISHTHIS_GITBRANCH branch...
+RUN git --version && echo '...Cloning $WISHTHIS_GITBRANCH branch...'
 RUN git clone -b $WISHTHIS_GITBRANCH https://github.com/grandeljay/wishthis.git .
 
 # Mount volume (config file)
