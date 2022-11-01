@@ -1,0 +1,32 @@
+image: docker:stable
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+  
+services:
+  - docker:dind
+
+before_script:
+  - docker info
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  
+build_image:
+  script:
+    - docker build . -t hiob/wishthis:latest --build-arg WISHTHIS_GITBRANCH=stable
+    - docker push hiob/wishthis:stable
+    - docker build . -t hiob/wishthis:latest --build-arg WISHTHIS_GITBRANCH=develop
+    - docker push hiob/wishthis:develop
+    - docker build . -t hiob/wishthis:latest --build-arg WISHTHIS_GITBRANCH=release-candidate
+    - docker push hiob/wishthis:release-candidate  
+job:on-schedule: 
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  script:
+    - docker build . -t hiob/wishthis:latest --build-arg WISHTHIS_GITBRANCH=stable
+    - docker push hiob/wishthis:stable
+    - docker build . -t hiob/wishthis:latest --build-arg WISHTHIS_GITBRANCH=develop
+    - docker push hiob/wishthis:develop
+    - docker build . -t hiob/wishthis:latest --build-arg WISHTHIS_GITBRANCH=release-candidate
+    - docker push hiob/wishthis:release-candidate  
+
