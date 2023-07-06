@@ -43,12 +43,6 @@ RUN a2ensite wishthis.conf
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN service apache2 restart
 
-## MySQL
-ENV DATABASE_HOST
-ENV DATABASE_NAME
-ENV DATABASE_USER
-ENV DATABASE_PASSWORD
-
 # Configure Sendmail for MJML
 RUN echo "sendmail_path=/usr/sbin/sendmail -t -i" >> /usr/local/etc/php/conf.d/sendmail.ini
 
