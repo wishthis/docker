@@ -1,8 +1,8 @@
-# ![](https://git.nefald.fr/uploads/-/system/project/avatar/229/wishthis_logo.png?width=48) Wishthis - [Unofficial docker image](https://hub.docker.com/r/hiob/wishthis)
-[Wishthis](https://wishthis.online/) is a simple, intuitive and modern wishlist platform to create, manage and view your wishes for any kind of occasion.
+# ![](https://git.nefald.fr/uploads/-/system/project/avatar/229/wishthis_logo.png?width=48) wishthis - [Unofficial docker image](https://hub.docker.com/r/hiob/wishthis)
+[wishthis](https://wishthis.online/) is a simple, intuitive and modern wishlist platform to create, manage and view your wishes for any kind of occasion.
 
-## Wishthis : documentation and setup
-Always refer you to [Wishthis documentation](https://github.com/grandeljay/wishthis/).
+## wishthis : documentation and setup
+Always refer you to [wishthis documentation](https://github.com/grandeljay/wishthis/).
 
 ## Docker : usage
 You can find support and an updated documentation on our [Gitlab](https://git.nefald.fr/docker/wishthis).
