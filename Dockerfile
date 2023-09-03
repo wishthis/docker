@@ -68,7 +68,7 @@ USER www-data
 ARG WISHTHIS_GITBRANCH=stable
 ENV WISHTHIS_GITBRANCH $WISHTHIS_GITBRANCH
 RUN git --version && echo '...Cloning $WISHTHIS_GITBRANCH branch...'
-RUN git clone -b $WISHTHIS_GITBRANCH https://github.com/grandeljay/wishthis.git .
+RUN git clone -b $WISHTHIS_GITBRANCH https://github.com/wishthis/wishthis.git .
 
 # Mount volume (config file)
 VOLUME $WISHTHIS_CONFIG
