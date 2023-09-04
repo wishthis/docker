@@ -1,4 +1,4 @@
-# Wishthis - Unofficial docker image
+# Wishthis - Official docker image
 FROM php:8.1-apache
 
 # Maintainer
