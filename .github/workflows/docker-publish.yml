@@ -46,19 +46,15 @@ jobs:
         with:
           images: |
             hiob/wishthis
-            ghcr.io/${{ github.repository }}
-          # generate Docker tags
-          tags: |
-            WISHTHIS_GITBRANCH=stable
-            WISHTHIS_GITBRANCH=develop
-            WISHTHIS_GITBRANCH=release-candidate     
+            ghcr.io/${{ github.repository } 
       
       - name: Build and push Docker images
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          #tags: ${{ steps.meta.outputs.tags }}
+          # generate Docker tags
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             WISHTHIS_GITBRANCH=stable
