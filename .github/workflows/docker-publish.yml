@@ -10,9 +10,12 @@
 name: Publish Docker image
 
 on:
-  release:
-    types: [published]
-
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
 jobs:
   push_to_registries:
     name: Push Docker image to multiple registries
