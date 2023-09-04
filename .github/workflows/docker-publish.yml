@@ -60,7 +60,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-           build-args: |
+          build-args: |
             WISHTHIS_GITBRANCH=stable
             WISHTHIS_GITBRANCH=develop
             WISHTHIS_GITBRANCH=release-candidate
