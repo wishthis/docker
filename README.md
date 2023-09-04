@@ -19,7 +19,8 @@ Three tags/images are avalaibles:
 - **stable** : for Wishthis's [*stable branch*](https://github.com/wishthis/wishthis/tree/stable)
 
 ### Docker-compose
-Always refer you to [Docker compose documentation](https://docs.docker.com/compose/reference/)
+Always refer you to [Docker compose documentation](https://docs.docker.com/compose/reference/).
+
 Here a sample of [docker-compose.yml](sample/docker-compose.yml.sample) :
 
 ```
@@ -35,8 +36,12 @@ services:
     volumes:
       - ./config.php:/var/www/html/src/config/config.php
 ```
-At first launch, if you didn't create a Wishthis's configuration file by mounting a permanent volume, You will be invite to setup Wishthis and database.
+
+Wishthis will be available to http://localhost:80. 
+
+You can use a reverse proxy ([Nginx](https://www.nginx.com/),[ Traefik](https://doc.traefik.io/traefik/getting-started/quick-start/), [SWAG](https://docs.linuxserver.io/general/swag)...) to serve wishthis with is own (sub)domain name. 
 
 ### Permanent configuration
+At first launch, if you didn't create a Wishthis's configuration file by mounting a permanent volume, You will be invite to setup Wishthis and database.
 
 To keep your database configuration  permanent, mount a volume (see example above), create a file named `config.php` and copy the [`config-sample.php` from Github's repo](https://github.com/wishthis/wishthis/blob/develop/src/config/config-sample.php).
