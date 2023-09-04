@@ -1,4 +1,4 @@
-# Wishthis - Unofficial docker image
+# Wishthis - Official docker image
 FROM php:8.1-apache
 
 # Maintainer
@@ -64,7 +64,7 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER www-data
 
 # GET WISHTHIS
-## Git clone grandeljay/wishthis (default stable branch)
+## Git clone wishthis/wishthis (default: stable branch)
 ARG WISHTHIS_GITBRANCH=stable
 ENV WISHTHIS_GITBRANCH $WISHTHIS_GITBRANCH
 RUN git --version && echo '...Cloning $WISHTHIS_GITBRANCH branch...'
