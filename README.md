@@ -1,6 +1,6 @@
 ![wishthis logo](https://raw.githubusercontent.com/wishthis/wishthis/develop/src/assets/img/logo-readme.svg "wishthis logo")
 
-# wishthis - Official docker image
+# wishthis - [Official docker image](https://hub.docker.com/r/hiob/wishthis)
 [wishthis](https://wishthis.online/) is a simple, intuitive and modern wishlist platform to create, manage and view your wishes for any kind of occasion.
 
 ## wishthis : documentation and setup
@@ -8,10 +8,7 @@ Always refer you to [wishthis documentation](https://github.com/wishthis/wishthi
 
 ## Docker : usage
 You can find support and an updated documentation on our [Github's repository](https://github.com/wishthis/docker/).
-
-We host ours docker images on these platforms:
- - [hub.docker.com/r/hiob/wishthis](https://hub.docker.com/r/hiob/wishthis)
- - [ghcr.io/wishthis/docker](https://ghcr.io/wishthis/docker)
+We host ours docker images on [Docker's hub](https://hub.docker.com/r/hiob/wishthis) or [ghcr.io](https://ghcr.io/wishthis/docker)
 
 Three tags/images are avalaibles: 
 - **develop** : for Wishthis's [*develop branch*](https://github.com/wishthis/wishthis/tree/develop)
