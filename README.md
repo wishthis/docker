@@ -1,6 +1,6 @@
 ![wishthis logo](https://raw.githubusercontent.com/wishthis/wishthis/develop/src/assets/img/logo-readme.svg "wishthis logo")
 
-# wishthis - [official docker image](https://hub.docker.com/r/hiob/wishthis)
+# wishthis - Official docker image
 [wishthis](https://wishthis.online/) is a simple, intuitive and modern wishlist platform to create, manage and view your wishes for any kind of occasion.
 
 ## wishthis : documentation and setup
@@ -9,7 +9,17 @@ Always refer you to [wishthis documentation](https://github.com/wishthis/wishthi
 ## Docker : usage
 You can find support and an updated documentation on our [Github's repository](https://github.com/wishthis/docker/).
 
+We host ours docker images on these platforms:
+ - [hub.docker.com/r/hiob/wishthis](https://hub.docker.com/r/hiob/wishthis)
+ - [ghcr.io/wishthis/docker](https://ghcr.io/wishthis/docker)
+
+Three tags/images are avalaibles: 
+- **develop** : for Wishthis's [*develop branch*](https://github.com/wishthis/wishthis/tree/develop)
+- **release-candidate** : for Wishthis's [*release-candidate branch*](https://github.com/wishthis/wishthis/tree/release-candidate)
+- **stable** : for Wishthis's [*stable branch*](https://github.com/wishthis/wishthis/tree/stable)
+
 ### Docker-compose
+Always refer you to [Docker compose documentation](https://docs.docker.com/compose/reference/)
 Here a sample of [docker-compose.yml](sample/docker-compose.yml.sample) :
 
 ```
@@ -19,12 +29,13 @@ services:
   wishthis:
     container_name: wishthis
     restart: unless-stopped
-    image: hiob/wishthis:latest
+    image: hiob/wishthis:stable
     ports:
       - 80:80
     volumes:
       - ./config.php:/var/www/html/src/config/config.php
 ```
+At first launch, if you didn't create a Wishthis's configuration file by mounting a permanent volume, You will be invite to setup Wishthis and database.
 
 ### Permanent configuration
 
