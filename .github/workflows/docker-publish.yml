@@ -53,6 +53,31 @@ jobs:
         with:
           context: .
           push: true
-          tags: stable
+          tags: |
+           hiob/wishthis:stable
+           ghcr.io/${{ github.repository }}:stable
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: WISHTHIS_GITBRANCH=stable    
+          build-args: WISHTHIS_GITBRANCH=stable
+
+      - name: DEVELOP - Build and push Docker images
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          push: true
+          tags: |
+           hiob/wishthis:develop
+           ghcr.io/${{ github.repository }}:develop  
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: WISHTHIS_GITBRANCH=develop
+            
+      - name: RELEASE-CANDIDATE - Build and push Docker images
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          push: true
+          tags: |
+           hiob/wishthis:release-candidate
+           ghcr.io/${{ github.repository }}:release-candidate
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: WISHTHIS_GITBRANCH=release-candidate
+          
