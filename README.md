@@ -12,13 +12,14 @@ We host ours docker images on [Docker's hub](https://hub.docker.com/r/hiob/wisht
 
 Three tags/images are avalaibles: 
 - **develop** : for Wishthis's [*develop branch*](https://github.com/wishthis/wishthis/tree/develop)
-- **release-candidate** : for Wishthis's [*release-candidate branch*](https://github.com/wishthis/wishthis/tree/release-candidate)
+- **release-candidate** : for Wishthis's [*release-candidate branch*](https://github.com/wishthis/wishthis/tree/release-candidate) **RECOMMENDED**
 - **stable** : for Wishthis's [*stable branch*](https://github.com/wishthis/wishthis/tree/stable)
 
 ### Docker-compose
 Always refer you to [Docker compose documentation](https://docs.docker.com/compose/reference/).
 
-Here a sample of [docker-compose.yml](sample/docker-compose.yml.sample) :
+Here a sample of [docker-compose.yml](sample/docker-compose.yml.sample). MySQL server isn't included in image, you should set it in another container :
+
 
 ```
 version: '3.7'
@@ -28,10 +29,34 @@ services:
     container_name: wishthis
     restart: unless-stopped
     image: hiob/wishthis:stable
+    environment:
+      - VIRTUAL_HOST=sub.domain.ext
     ports:
       - 80:80
     volumes:
       - ./config.php:/var/www/html/src/config/config.php
+    networks:
+      - wishthis
+      
+  mariadb:
+    container_name: db
+    restart: unless-stopped
+    image: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassword
+      MARIADB_DATABASE: databasename
+      MARIADB_USER: username
+      MARIADB_PASSWORD: userpassword
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - wishthis
+
+networks:
+  wishthis:
+    external: true
 ```
 
 Wishthis will be available to http://localhost:80. 
