@@ -53,7 +53,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: stable
+          tags: |
+           hiob/wishthis:stable
+           ghcr.io/${{ github.repository }}:stable
           labels: ${{ steps.meta.outputs.labels }}
           build-args: WISHTHIS_GITBRANCH=stable
 
@@ -62,7 +64,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: develop
+          tags: |
+           hiob/wishthis:develop
+           ghcr.io/${{ github.repository }}:develop  
           labels: ${{ steps.meta.outputs.labels }}
           build-args: WISHTHIS_GITBRANCH=develop
             
@@ -71,6 +75,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: release-candidate
+          tags: |
+           hiob/wishthis:release-candidate
+           ghcr.io/${{ github.repository }}:release-candidate
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: WISHTHIS_GITBRANCH=release-candidate            
+          build-args: WISHTHIS_GITBRANCH=release-candidate
+          
