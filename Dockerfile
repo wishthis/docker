@@ -2,8 +2,8 @@
 FROM php:8.1-apache
 
 # Maintainer
-LABEL maintainer "hiob <hello@hiob.fr>"
-LABEL author "hiob <hello@hiob.fr>"
+LABEL maintainer "hiob <50a7f360-a150-43e4-8aa0-5e837f6c061c@corbeille.xyz>"
+LABEL author "hiob <50a7f360-a150-43e4-8aa0-5e837f6c061c@corbeille.xyz>"
 
 LABEL description "PHP 8.1 / Apache 2 / Wishthis ($WISHTHIS_GITBRANCH)"
 
