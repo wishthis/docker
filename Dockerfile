@@ -1,85 +1,101 @@
-# Wishthis - Official docker image
-FROM php:8.2-apache
+# Wishthis - Official optimized docker image
+FROM php:8.2-apache-bullseye AS builder
 
-# Maintainer
-LABEL maintainer "hiob <50a7f360-a150-43e4-8aa0-5e837f6c061c@corbeille.xyz>"
-LABEL author "hiob <50a7f360-a150-43e4-8aa0-5e837f6c061c@corbeille.xyz>"
-
-LABEL description "PHP 8.2 / Apache 2 / Wishthis ($WISHTHIS_GITBRANCH)"
-
-# Add required packages
-RUN a2enmod rewrite
-RUN apt update \
-  && apt install -y apt-utils \ 
-  curl \ 
-  git \ 
-  libfreetype6-dev \
-  libicu-dev \
-  libjpeg62-turbo-dev \
-  libpng-dev \
-  nano \
-  sendmail \
-  sudo \
-  tzdata \ 
-  zlib1g-dev \
-  && apt clean -y
-  
-# Add PHP extensions  
-RUN docker-php-ext-configure intl \
- && docker-php-ext-install -j$(nproc) exif gettext iconv intl mysqli pdo pdo_mysql \
- && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
- && docker-php-ext-install -j$(nproc) gd
- 
-# Working directory
-ENV WISHTHIS_INSTALL /var/www/html
-ENV WISHTHIS_CONFIG /var/www/html/src/config/
-RUN chown -R www-data:www-data $WISHTHIS_INSTALL
-
-# Enabling Apache vhost
-COPY config/wishthis.conf /etc/apache2/sites-available/wishthis.conf
-RUN a2enmod rewrite
-WORKDIR /etc/apache2/sites-available/
-RUN a2ensite wishthis.conf
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-RUN service apache2 restart
-
-# Configure Sendmail for MJML
-RUN echo "sendmail_path=/usr/sbin/sendmail -t -i" >> /usr/local/etc/php/conf.d/sendmail.ini
-
-# Cleanup
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*;
-
-## Timezone
-ENV TZ Europe/Paris
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-# Change work directory
-WORKDIR $WISHTHIS_INSTALL
-
-# Add www-data to sudoers
-RUN adduser www-data sudo
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-# Change user to www-data (quickly than chown)
-USER www-data
-
-# GET WISHTHIS
-## Git clone wishthis/wishthis (default: stable branch)
+# Git branch argument system
 ARG WISHTHIS_GITBRANCH=stable
-ENV WISHTHIS_GITBRANCH $WISHTHIS_GITBRANCH
-RUN git --version && echo '...Cloning $WISHTHIS_GITBRANCH branch...'
+ENV WISHTHIS_GITBRANCH=$WISHTHIS_GITBRANCH
+
+# System configuration and dependency installation in a single layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    git \
+    libfreetype6-dev \
+    libicu-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    sendmail \
+    tzdata \
+    zlib1g-dev \
+  && rm -rf /var/lib/apt/lists/* \
+  && a2enmod rewrite \
+  # PHP extensions configuration and installation in the same layer
+  && docker-php-ext-configure intl \
+  && docker-php-ext-install -j$(nproc) exif gettext iconv intl mysqli pdo pdo_mysql \
+  && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
+  && docker-php-ext-install -j$(nproc) gd \
+  # Sendmail configuration
+  && echo "sendmail_path=/usr/sbin/sendmail -t -i" >> /usr/local/etc/php/conf.d/sendmail.ini \
+  # Timezone configuration
+  && ln -snf /usr/share/zoneinfo/Europe/Paris /etc/localtime \
+  && echo "Europe/Paris" > /etc/timezone \
+  # Apache configuration
+  && echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+# Environment configuration
+ENV WISHTHIS_INSTALL=/var/www/html
+ENV WISHTHIS_CONFIG=/var/www/html/src/config/
+
+# Copy and enable Apache configuration
+COPY config/wishthis.conf /etc/apache2/sites-available/wishthis.conf
+RUN a2ensite wishthis.conf
+
+# Clone Wishthis project from GitHub
+WORKDIR $WISHTHIS_INSTALL
 RUN git clone -b $WISHTHIS_GITBRANCH https://github.com/wishthis/wishthis.git .
 
-# Mount volume (config file)
+# Prepare entrypoint script
+COPY script/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Final image build
+FROM php:8.2-apache-bullseye
+
+# Metadata
+LABEL maintainer="hiob <50a7f360-a150-43e4-8aa0-5e837f6c061c@corbeille.xyz>"
+LABEL author="hiob <50a7f360-a150-43e4-8aa0-5e837f6c061c@corbeille.xyz>"
+LABEL description="PHP 8.2 / Apache 2 / Wishthis (${WISHTHIS_GITBRANCH})"
+
+# Environment variables
+ENV WISHTHIS_INSTALL=/var/www/html
+ENV WISHTHIS_CONFIG=/var/www/html/src/config/
+ENV TZ=Europe/Paris
+
+# Install minimal required packages for runtime
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    sendmail \
+    tzdata \
+  && rm -rf /var/lib/apt/lists/* \
+  # Apache configuration
+  && a2enmod rewrite \
+  # Sendmail configuration
+  && echo "sendmail_path=/usr/sbin/sendmail -t -i" >> /usr/local/etc/php/conf.d/sendmail.ini \
+  # Timezone configuration
+  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
+
+# Copy PHP extensions and Apache configuration from build stage
+COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
+COPY --from=builder /etc/apache2/sites-available/wishthis.conf /etc/apache2/sites-available/
+COPY --from=builder /etc/apache2/apache2.conf /etc/apache2/
+RUN a2ensite wishthis.conf
+
+# Copy application source code
+COPY --from=builder $WISHTHIS_INSTALL $WISHTHIS_INSTALL
+COPY --from=builder /usr/local/bin/entrypoint.sh /usr/local/bin/
+
+# Set appropriate permissions
+RUN chown -R www-data:www-data $WISHTHIS_INSTALL
+
+# Configure volume for config files
 VOLUME $WISHTHIS_CONFIG
 
-# Expose port
+# Expose HTTP port
 EXPOSE 80
 
-# ENTRYPOINT / CMD
-COPY script/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN sudo chmod +x /usr/local/bin/entrypoint.sh
+# Use www-data as default user
+USER www-data
+
+# Entrypoint and default command
 ENTRYPOINT ["sh", "/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
-
 
