@@ -64,6 +64,7 @@ ENV TZ=Europe/Paris
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sendmail \
     tzdata \
+    sudo \
   && rm -rf /var/lib/apt/lists/* \
   # Apache configuration
   && a2enmod rewrite \
@@ -85,6 +86,10 @@ COPY --from=builder /usr/local/bin/entrypoint.sh /usr/local/bin/
 
 # Set appropriate permissions
 RUN chown -R www-data:www-data $WISHTHIS_INSTALL
+
+# Add www-data to sudoers
+RUN adduser www-data sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Configure volume for config files
 VOLUME $WISHTHIS_CONFIG
