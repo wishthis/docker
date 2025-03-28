@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e  # Exit immediately if a command exits with a non-zero status
+# set -e  # Exit immediately if a command exits with a non-zero status
 # Enabling and configure Hostname and Sendmail for MJML
 # Configure hostname for email functionality
 sudo bash -c "echo '$(hostname -i) $(hostname) $(hostname).localhost' >> /etc/hosts"
