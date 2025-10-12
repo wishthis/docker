@@ -1,0 +1,18 @@
+services:
+  wishthis:
+    container_name: wishthis
+    restart: unless-stopped
+    image: hiob/wishthis:stable
+    environment:
+      - VIRTUAL_HOST=sub.domain.ext
+    ports:
+      - 80:80
+    volumes:
+      - ./config/:/var/www/html/src/config/
+      - ./database.sqlite;/var/www/html/database.sqlite
+    networks:
+      - wishthis
+
+networks:
+  wishthis:
+    external: false

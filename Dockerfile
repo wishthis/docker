@@ -49,6 +49,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Final image build
 FROM php:8.2-apache-bullseye
+ARG WISHTHIS_GITBRANCH
+ENV WISHTHIS_GITBRANCH=$WISHTHIS_GITBRANCH
 
 # Metadata
 LABEL maintainer="hiob <50a7f360-a150-43e4-8aa0-5e837f6c061c@corbeille.xyz>"
@@ -103,4 +105,3 @@ USER www-data
 # Entrypoint and default command
 ENTRYPOINT ["sh", "/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
-
