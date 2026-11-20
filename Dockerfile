@@ -1,5 +1,5 @@
 # Wishthis - Official optimized docker image
-FROM php:8.2-apache-bullseye AS builder
+FROM php:8.3-apache-trixie AS builder
 
 # Git branch argument system
 ARG WISHTHIS_GITBRANCH=stable
@@ -48,12 +48,12 @@ COPY script/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Final image build
-FROM php:8.2-apache-bullseye
+FROM php:8.3-apache-trixie
 
 # Metadata
 LABEL maintainer="hiob <50a7f360-a150-43e4-8aa0-5e837f6c061c@corbeille.xyz>"
 LABEL author="hiob <50a7f360-a150-43e4-8aa0-5e837f6c061c@corbeille.xyz>"
-LABEL description="PHP 8.2 / Apache 2 / Wishthis (${WISHTHIS_GITBRANCH})"
+LABEL description="PHP 8.3 / Apache 2 / Wishthis (${WISHTHIS_GITBRANCH})"
 
 # Environment variables
 ENV WISHTHIS_INSTALL=/var/www/html
@@ -65,6 +65,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     sendmail \
     tzdata \
     sudo \
+    libicu-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
   && rm -rf /var/lib/apt/lists/* \
   # Apache configuration
   && a2enmod rewrite \
